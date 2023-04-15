@@ -1,0 +1,41 @@
+<html>
+    <head>
+        {# Текущая активная вкладка в названии или Main page #}
+        <title>{% if instance %}{{ instance.name }}{% else %}Main page{% endif %}</title>
+    </head>
+    <body>
+        <h3><a href="{% url 'menu' path='' %}">Main page</a></h3>
+        {# Цикл создает несколько меню, root_nodes являются названиями меню #}
+        {% for m in menu %}
+            <h4>{{ m.name }}</h4>
+            <ul>
+                {# Идем во всю глубину текущего значения для проверки условий вложенности #}
+                {% for cat in m.get_children %}
+                    {% if cat in instance.get_ancestors or cat.name == instance.name %}
+                        {% for ancestor in instance.get_ancestors %}
+                            {# т.к. берем всех родителей, исключаем названия меню #}
+                            {% if ancestor not in menu %}
+                                > <a href="{{ ancestor.get_absolute_url }}">{{ ancestor.name }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {# текущей элемент меню выделяем #}
+                        > <strong>{{ instance.name }}</strong>
+                        <ul>
+                            {# Выводим детей активной вкладки на одну глубину, если нет - No items #}
+                            {% for child in children %}
+                                <li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
+                            {% empty %}
+                                <li>No items</li>
+                            {% endfor %}
+                        </ul>
+                    {# Для вывода названий меню первой глубины #}
+                    {% elif cat in m.get_children %}
+                        <li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
+                    {% endif %}
+                {% empty %}
+                    <li>No items</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </body>
+</html>

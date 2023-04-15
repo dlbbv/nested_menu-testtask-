@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for m in cats.get_children %}
+        <ul>
+            <li>{{ m.name }}</li>
+        </ul>
+    {% endfor %}
+</body>
+</html>
